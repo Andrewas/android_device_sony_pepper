@@ -3,10 +3,12 @@ USE_CAMERA_STUB := true
 # inherit from the proprietary version
 -include vendor/sony/pepper/BoardConfigVendor.mk
 
-TARGET_SPECIFIC_HEADER_PATH := device/sony/pepper/include
-TARGET_SPECIFIC_HEADER_PATH += device/sony/pepper/hardware
-TARGET_SPECIFIC_HEADER_PATH += hardware/semc/bluetooth/glib
-TARGET_SPECIFIC_HEADER_PATH += hardware/semc/bluetooth/bluez/lib
+TARGET_SPECIFIC_HEADER_PATH := \
+    device/sony/pepper/include \
+    device/sony/pepper/hardware \
+    hardware/semc/bluetooth/glib \
+    hardware/semc/bluetooth/bluez/lib \
+    hardware/semc/bluetooth/bluez/btio
 
 TARGET_NO_BOOTLOADER := true
 TARGET_NO_RADIOIMAGE := true
@@ -33,8 +35,6 @@ TARGET_GLOBAL_CPPFLAGS += -mfpu=neon -mfloat-abi=softfp
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_STE := true
 COMMON_GLOBAL_CFLAGS += -DSTE_BT
-BOARD_BLUEDROID_VENDOR_CONF := device/sony/pepper/hardware/bluetooth/vnd_u8500.txt
-BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/sony/pepper/hardware/bluetooth/include
 
 # Audio
 BOARD_USES_GENERIC_AUDIO := false
@@ -43,20 +43,23 @@ COMMON_GLOBAL_CFLAGS += -DSTE_AUDIO
 # hack for audio
 COMMON_GLOBAL_CFLAGS += -DMR0_AUDIO_BLOB
 # seems needed for sink latency
-BOARD_USES_LIBMEDIA_WITH_AUDIOPARAMETER := true
+BOARD_USES_LIBMEDIA_WITH_AUDIOPARAMETER := true 
 
 # WIFI
+BOARD_WLAN_DEVICE := cw1200
 WPA_SUPPLICANT_VERSION := VER_0_8_X
+CONFIG_DRIVER_NL_80211 := true
 BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := private_lib_nl80211_cmd
 BOARD_HOSTAPD_DRIVER := NL80211
-BOARD_TI_SOFTAP := true
-BOARD_WLAN_DEVICE := wl12xx_mac80211
-BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_wl12xx
-BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_wl12xx
+BOARD_HOSTAPD_PRIVATE_LIB := private_lib_nl80211_cmd
+BOARD_SOFTAP_DEVICE_TI := NL80211
+USES_TI_MAC80211 := true
+COMMON_GLOBAL_CFLAGS += -DUSES_TI_MAC80211 -DCONFIG_DRIVER_NL80211
 
 # Graphics
 USE_OPENGL_RENDERER := true
-BOARD_EGL_CFG := device/sony/pepper/config/egl.cfg
+BOARD_EGL_CFG := device/sony/pepper/prebuilt/system/lib/egl/egl.cfg
 COMMON_GLOBAL_CFLAGS += -DSTE_HARDWARE
 
 # jb camera
@@ -87,10 +90,10 @@ BOARD_HAS_SDCARD_INTERNAL := true
 BOARD_USES_MMCUTILS := true
 BOARD_HAS_NO_MISC_PARTITION := true
 
-# cwm specific
+# Cwm specific 
 BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/sony/pepper/recovery/recovery-keys.c
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"roboto_10x18.h\"
-TARGET_RECOVERY_FSTAB = device/sony/pepper/config/root/fstab.st-ericsson
+TARGET_RECOVERY_FSTAB = device/sony/pepper/prebuilt/root/fstab.st-ericsson
 RECOVERY_FSTAB_VERSION := 2
 
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/musb-ux500.0/musb-hdrc/gadget/lun%d/file"
@@ -106,11 +109,12 @@ BOARD_KERNEL_CMDLINE := cachepolicy=writealloc noinitrd init=init board_id=1 log
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x01000000
 
 # Partition information
-BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true
+BOARD_VOLD_EMMC_SHARES_DEV_MAJOR := true 
 BOARD_VOLD_MAX_PARTITIONS := 16
 
-BOARD_BOOTIMAGE_PARTITION_SIZE := 0x01400000
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x01400000
+# partition size is dec=16777216 hex=01000000 so 0x01000000 is correct one!
+BOARD_BOOTIMAGE_PARTITION_SIZE := 0x01000000
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x01000000
 
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1056964608
 BOARD_USERDATA_PARTITION_SIZE := 2147483648
